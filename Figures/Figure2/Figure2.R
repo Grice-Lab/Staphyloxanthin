@@ -156,7 +156,8 @@ pval1088fig2e = round(t_test_1088_fig2e$p.value, 4)
 pval925fig2e = "1.607e-05"
 
 ThymolStrains = ggplot(StrainsThymolXanthin, aes(x=strain, y=staphyloxanthin, fill=thymol))+
-  geom_boxplot( size=.25)+
+  geom_jitter( position=position_jitterdodge(), size=1)+
+  geom_boxplot( size=.2)+
   scale_fill_manual(values = c("darkorange", 'magenta')) +
   labs(x="strain", y="staphyloxanthin production (OD465 nm)") +
   theme_classic()+
@@ -183,10 +184,10 @@ ClinicalStrainsComparePoly = StrainsPolymixin %>% filter(strain %in% c("SA925", 
 
 polymixin_t_USA300 = t.test(USA300StrainsComparePoly$survival ~ USA300StrainsComparePoly$strain)
 polymixin_t_clinical = t.test(ClinicalStrainsComparePoly$survival ~ ClinicalStrainsComparePoly$strain)
-p_polymixin300 = round(polymixin_t_USA300$p.value, 4)
+p_polymixin300 = round(polymixin_t_USA3ThymolStrains00$p.value, 4)
 p_polymixinClinical = round(polymixin_t_clinical$p.value, 4)
 
-PolymixinPlot = ggplot(StrainsPolymixin, aes(x=strain,y=survival))+geom_boxplot(fill="dodgerblue", width = 0.5, size=.25)+
+PolymixinPlot = ggplot(StrainsPolymixin, aes(x=strain,y=survival))+geom_boxplot(fill="dodgerblue", width = 0.5, size=.2 )+
   geom_jitter(width=.15)+ theme_classic() +
   labs(y="% Survival With Polymixin" ,x="strain")+
   theme(axis.title.x = element_text(face="bold",size=15),
@@ -202,4 +203,28 @@ PolymixinPlot = ggplot(StrainsPolymixin, aes(x=strain,y=survival))+geom_boxplot(
 
 ggsave(PolymixinPlot, width=7, height=6,file="Figures/Figure2/figure2F.pdf")
 
+# Figure S2
+###########
+Palette5 = (RColorBrewer::brewer.pal(10, "Spectral"))[c(4, 1, 9, 8, 10)]
 
+Palette5 = (RColorBrewer::brewer.pal(10, "Spectral"))[c(4, 1, 9, 8)]
+Palette5 = (RColorBrewer::brewer.pal(10, "Spectral"))[c( 1, 9, 8, 10)]
+#growth curves
+growth<-read.csv("Data/InVitroData/growth_curves.csv")
+growth
+summary(growth)
+p <- ggplot(data = growth, aes(x = time, y = average, group = strain))
+p+geom_point()
+growthcurve = p + geom_line(aes(color=strain),size=1)+
+  geom_point(aes(color=strain),size=5)+
+  scale_color_manual(values=Palette5)+
+  theme_classic()+ggtitle("Growth Curve")+
+  theme(plot.title = element_text(hjust = 0.5, face="bold", size=20))+
+  labs(x="time (hours)",y="OD600")+
+  theme(axis.title.x = element_text(face="bold",size=15))+
+  theme(axis.title.y = element_text(face="bold",size=15))+
+  theme(axis.text.y = element_text(face="bold",size=15))+
+  theme(axis.text.x = element_text(face="bold",size=15))+
+  geom_errorbar(aes(ymin =average-stdev, ymax =average+stdev),
+                width = 0.2, position = position_dodge(0.5))
+ggsave(growthcurve, file="Figures/Figure2/FigureS2.pdf")
