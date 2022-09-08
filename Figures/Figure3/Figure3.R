@@ -1,7 +1,18 @@
 # Figure 3
 # adapted from ARM's scripts
 
+library("survminer")
+library("ggplot2")
+library("dplyr")
+
+Palette5 = (RColorBrewer::brewer.pal(10, "Spectral"))[c(4, 1, 9, 8, 10)]
+Palette3 = (RColorBrewer::brewer.pal(10, "Spectral"))[c(9, 8,10)]
+
+
 woundsize= read.csv("Data/InVivoData/woundsizes.csv")
+PilotExp = read.csv("Data/InVivoData/pilot_wound_measurements.csv")
+kaplan<-read.csv("Data/InVivoData/mouse_kaplan_05.02.22.csv")
+CFU<-read.csv("Data/InVivoData/CFU_data.csv")
 
 wound_order <- c("PBS","LAC", "LAC_dCrtN_1", "SA925", "SA1088")
 
@@ -76,5 +87,92 @@ AllTimePoints = ggplot(BigDF, aes(x=Day, y=MeanPct, color=group, group=group)) +
 
 
 ggsave(AllTimePoints, file="Figures/Figure3/Figure3C.pdf", width=9.6, height=5.5)
+
+
+
+# Figure S3a: Pilot experiment wound healing results
+####################################################
+
+PilotPairwiseWilcox = pairwise.wilcox.test(PilotExp$change_14, PilotExp$group, pool.sd=F, p.adjust.method = "none", exact=F)
+
+SA1088_PBS = round((PilotPairwiseWilcox$p.value)["SA1088", "PBS"],4)
+SA925_PBS = round((PilotPairwiseWilcox$p.value)["SA925", "PBS"],4)
+SA925_SA1088 = round((PilotPairwiseWilcox$p.value)["SA925", "SA1088"],4)
+
+
+PilotPlot = ggplot(PilotExp, aes(x=group, y=change_14)) + geom_boxplot(size=.25) + geom_jitter(aes(color=group),size=3)+theme_classic()+
+  theme(axis.title.y = element_text(face="bold",size=15),
+        axis.title.x = element_text(face="bold",size=15),
+        axis.text.y = element_text(face="bold",size=15),
+        axis.text.x = element_text(face="bold",size=15))  + scale_color_manual(values=Palette3) +
+  annotate(geom="text", x=1.5, y=100, label=paste0("p=", SA1088_PBS), size=5) +
+  annotate(geom="text", x=2, y=420, label=paste0("p=", SA925_PBS), size=5) +
+  annotate(geom="text", x=2.5, y=445, label=paste0("p=", SA925_SA1088), size=5) + labs(x="Strain", y="% original wound size at day 14")
+
+ggsave(PilotPlot, file="Figures/Figure3/FigureS3a.pdf", width=7, height=5)
+
+
+# Figure S3b. Survival probabilities 
+####################################
+
+model_fit <- survfit(Surv(day, number) ~ group, data = kaplan)
+
+SurvivalCurve = ggsurvplot(model_fit, data = kaplan, censor.shape="|",
+           censor.size = 4, conf.int = TRUE, conf.int.style = "step",size=.5,
+           xlab = "Time in days")
+
+pdf(file="Figures/Figure3/FigureS3b.pdf", width=7, height=6)
+SurvivalCurve
+dev.off()
+
+
+# Figure S3c. Total CFUs 
+colnames(CFU)<-c("mouse","group","average","weight","cfu_gram","SA_gram")
+CFU
+
+wilcoxCFUTotal = pairwise.wilcox.test(log10(CFU$cfu_gram), CFU$group, pool.sd=F, p.adjust.method = "none", exact=F)
+USA300pvaluesCFUTotal = round((wilcoxCFUTotal$p.value)["USA300 LAC", "USA300 dCrtN"], 4)
+ClinicalpvaluesCFUTotal = round((wilcoxCFUTotal$p.value)["SA925", "SA1088"], 4)
+PBS_USA300 =  round((wilcoxCFUTotal$p.value)["USA300 LAC", "USA300 dCrtN"], 4)
+TotalCFUPlot = ggplot(data=CFU, aes(x=group, y=cfu_gram))+geom_boxplot(size=.25)+
+  geom_jitter(aes(color=group),size=2)+
+  labs(y="Total CFUs per gram")+
+  theme_classic()+
+  theme(axis.title.x = element_text(face="bold",size=15))+
+  theme(axis.title.y = element_text(face="bold",size=15))+
+  theme(axis.text.y = element_text(face="bold",size=15))+
+  theme(axis.text.x = element_text(face="bold",size=15))+
+  theme(plot.title = element_text(hjust = 0.5, face="bold", size=20))+
+  scale_color_manual(values=Palette5)+
+  scale_y_continuous(trans='log10')+scale_x_discrete(limits = c("PBS", "USA300 LAC", "USA300 dCrtN", "SA925", "SA1088")) +
+  annotate(geom="text", x= 2.5, y=1e07, label=paste0("p=",USA300pvaluesCFUTotal),size=5)+
+  annotate(geom="text", x= 4.5, y=3e07, label=paste0("p=",ClinicalpvaluesCFUTotal),size=5) 
+  
+
+ggsave(TotalCFUPlot, file="Figures/Figure3/FigureS3c.pdf", width=8, height=5)
+
+# Figure S3d: CFUs of S. aureus at endpoint of wounding experiment
+###################################################################
+wilcoxCFUaureus = pairwise.wilcox.test(CFU$SA_gram, CFU$group, pool.sd=F, p.adjust.method = "none", exact=F)
+USA300pvaluesCFUaureus = round((wilcoxCFUaureus$p.value)["USA300 LAC", "USA300 dCrtN"], 4)
+ClinicalpvaluesCFUaureus = round((wilcoxCFUaureus$p.value)["SA925", "SA1088"], 4)
+
+
+
+AureusCFUPlot = ggplot(data=CFU, aes(x=group, y=SA_gram+.00001))+geom_boxplot(size=.25)+
+  geom_jitter(aes(color=group),size=2)+
+  labs(y="S. aureus CFUs per gram")+
+  theme_classic()+
+  theme(axis.title.x = element_text(face="bold",size=15))+
+  theme(axis.title.y = element_text(face="bold",size=15))+
+  theme(axis.text.y = element_text(face="bold",size=15))+
+  theme(axis.text.x = element_text(face="bold",size=15))+
+  theme(plot.title = element_text(hjust = 0.5, face="bold", size=20))+
+  scale_color_manual(values=Palette5)+
+  scale_y_continuous(trans='log10')+scale_x_discrete(limits = c("PBS", "USA300 LAC", "USA300 dCrtN", "SA925", "SA1088")) +
+  annotate(geom="text", x= 2.5, y=2e07, label=paste0("p=",USA300pvaluesCFUaureus),size=5)+
+  annotate(geom="text", x= 4.5, y=4e07, label=paste0("p=",ClinicalpvaluesCFUaureus),size=5) 
+ggsave(AureusCFUPlot, file="Figures/Figure3/FigureS3d.pdf", width=8, height=5)
+
 
 
