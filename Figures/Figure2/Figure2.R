@@ -7,7 +7,6 @@ library("dplyr")
 library("RColorBrewer")
 library("forcats")
 library("ggpubr")
-setwd("/Users/amycampbell/Desktop/GriceLabGit/Staphyloxanthin/")
 
 
 # Read in data
@@ -227,4 +226,4 @@ growthcurve = p + geom_line(aes(color=strain),size=1)+
   theme(axis.text.x = element_text(face="bold",size=15))+
   geom_errorbar(aes(ymin =average-stdev, ymax =average+stdev),
                 width = 0.2, position = position_dodge(0.5))
-ggsave(growthcurve, file="Figures/Figure2/FigureS2.pdf")
+ggsave(growthcurve, file="Figures/Figure2/FigureS2.pdf", width=8,height=7)
