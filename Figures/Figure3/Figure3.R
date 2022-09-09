@@ -1,5 +1,6 @@
 # Figure 3
-# adapted from ARM's scripts
+###########
+# adapted from ARM's and AEC's scripts
 
 library("survminer")
 library("ggplot2")
