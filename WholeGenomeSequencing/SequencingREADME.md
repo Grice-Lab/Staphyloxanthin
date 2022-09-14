@@ -58,3 +58,6 @@ MakeSNPcsv.sh # calls getDP4Counts.py and outputs test_BCF_array.csv
 ```
 Count SNP sites with >10X coverage ≥50 bp apart from one another and identify any genomes with more than 30 of these (based on [Raven et al. 2020](https://doi.org/10.1099/mgen.0.000354) )
 
+```
+Admixtures.sh # runs AdmixtureOutput.R with test_BCF_array.csv as input and ContaminatedIsolates.csv as output (if any) 
+```
