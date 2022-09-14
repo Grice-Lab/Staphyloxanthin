@@ -26,7 +26,7 @@ sh Run_Bowtie_Assemblies.sh
 ```
  Use bowtie output to summarize depths & breadths of reads by contig 
 ```
-sh Coverage_Stats_Contigs.sh 
+sh Coverage_Stats_Contigs.sh # calls coverage_stats.py
 ```
 Make csv of  depths & lengths by contig (DFU_Covg_stats.tsv)
 
