@@ -53,6 +53,7 @@ sh CombineFilteredContigs.sh
 Align reads against cleaned set of contigs, calculate coverage & call SNPs
 
 ```
+Run_Bowtie_PostCleaning.sh # Aligns trimmed reads to the cleaned (really just filtered >100bp length since no contamination ID'd in this case) Illumina contigs
 TestAdmixture.sh # makes .bcf files from the alignments 
 MakeSNPcsv.sh # calls getDP4Counts.py and outputs test_BCF_array.csv
 ```
