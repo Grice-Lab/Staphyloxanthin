@@ -171,7 +171,7 @@ p_staphylokinase = round(T_staphylokinase$p.value, 4)
 # Figure 1B(ii) maximum biofilm production per patient
 ##################################################
 biofilm_boxplot = ggplot(data=Maxed, aes(x=Healed, y=max_biofilm)) + geom_boxplot() + labs(x="Healing Outcome", y="Maximum normalized biofilm") + 
-  geom_jitter(aes(color=Healed),size=3)+  theme_classic()+
+  geom_jitter(aes(color=Healed),size=3, height=0)+  theme_classic()+
   theme(axis.title.x = element_text(face="bold",size=15),
         axis.title.y = element_text(face="bold",size=15),
         axis.text.y = element_text(face="bold",size=10), 
@@ -182,7 +182,7 @@ biofilm_boxplot
 # Figure 1C(ii) maximum siderophore production per patient
 ######################################################
 siderophore_boxplot = ggplot(data=Maxed, aes(x=Healed, y=max_siderophore)) + geom_boxplot() + labs(x="Healing Outcome", y="Maximum normalized siderophore") + 
-  geom_jitter(aes(color=Healed),size=3)+  theme_classic()+
+  geom_jitter(aes(color=Healed),size=3,height=0)+  theme_classic()+
   theme(axis.title.x = element_text(face="bold",size=15),
         axis.title.y = element_text(face="bold",size=15),
         axis.text.y = element_text(face="bold",size=10), 
@@ -193,7 +193,7 @@ siderophore_boxplot
 # Figure 1d(ii) maximum staphylokinase production per patient
 ##########################################################
 staphylokinase_boxplot = ggplot(data=Maxed, aes(x=Healed, y=max_staphylokinase)) + geom_boxplot() + labs(x="Healing Outcome", y="Maximum normalized staphylokinase") + 
-  geom_jitter(aes(color=Healed),size=3)+  theme_classic()+
+  geom_jitter(aes(color=Healed),size=3, height=0)+  theme_classic()+
   theme(axis.title.x = element_text(face="bold",size=15),
         axis.title.y = element_text(face="bold",size=15),
         axis.text.y = element_text(face="bold",size=10), 
@@ -204,7 +204,7 @@ staphylokinase_boxplot
 # Figure 1e(ii) maximum staphyloxanthin production per patient
 ##########################################################
 staphyloxanthin_boxplot = ggplot(data=Maxed, aes(x=Healed, y=max_staphyloxanthin)) + geom_boxplot() + labs(x="Healing Outcome", y="Maximum normalized staphyloxanthin") + 
-  geom_jitter(aes(color=Healed),size=3)+  theme_classic()+
+  geom_jitter(aes(color=Healed),size=3,height=0)+  theme_classic()+
   theme(axis.title.x = element_text(face="bold",size=15),
         axis.title.y = element_text(face="bold",size=15),
         axis.text.y = element_text(face="bold",size=10), 
@@ -236,7 +236,7 @@ p_staphyloxanthin12 = round(T_staphyloxanthin12$p.value, 4)
 # Figure S1A maximum biofilm production per patient
 ##################################################
 biofilm_boxplotS1 = ggplot(data=Maxed, aes(x=Healed_by_12, y=max_biofilm)) + geom_boxplot() + labs( y="Maximum normalized biofilm") + 
-  geom_jitter(aes(color=Healed_by_12),size=3)+  theme_classic()+
+  geom_jitter(aes(color=Healed_by_12),size=3,height=0)+  theme_classic()+
   theme(axis.title.y = element_text(face="bold",size=15),
         axis.text.y = element_text(face="bold",size=10), 
         axis.text.x = element_text(face="bold",size=10),
@@ -247,7 +247,7 @@ biofilm_boxplotS1
 # Figure 1C(ii) maximum siderophore production per patient
 ######################################################
 siderophore_boxplotS1 = ggplot(data=Maxed, aes(x=Healed_by_12, y=max_siderophore)) + geom_boxplot() + labs( y="Maximum normalized siderophore") + 
-  geom_jitter(aes(color=Healed_by_12),size=3)+  theme_classic()+
+  geom_jitter(aes(color=Healed_by_12),size=3, height=0)+  theme_classic()+
   theme(axis.title.x = element_blank(),
         axis.title.y = element_text(face="bold",size=15),
         axis.text.y = element_text(face="bold",size=10), 
@@ -258,7 +258,7 @@ siderophore_boxplotS1
 # Figure 1d(ii) maximum staphylokinase production per patient
 ##########################################################
 staphylokinase_boxplotS1 = ggplot(data=Maxed, aes(x=Healed_by_12, y=max_staphylokinase)) + geom_boxplot() + labs( y="Maximum normalized staphylokinase") + 
-  geom_jitter(aes(color=Healed_by_12),size=3)+  theme_classic()+
+  geom_jitter(aes(color=Healed_by_12),size=3, height=0)+  theme_classic()+
   theme(axis.title.y = element_text(face="bold",size=15),
         axis.text.y = element_text(face="bold",size=10), 
         axis.text.x = element_text(face="bold",size=10),
@@ -269,7 +269,7 @@ staphylokinase_boxplotS1
 # Figure 1e(ii) maximum staphyloxanthin production per patient
 ##########################################################
 staphyloxanthin_boxplotS1 = ggplot(data=Maxed, aes(x=Healed_by_12, y=max_staphyloxanthin)) + geom_boxplot() + labs( y="Maximum normalized staphyloxanthin") + 
-  geom_jitter(aes(color=Healed_by_12),size=3)+  theme_classic()+
+  geom_jitter(aes(color=Healed_by_12),size=3, height=0)+  theme_classic()+
   theme(axis.title.y = element_text(face="bold",size=15),
         axis.text.y = element_text(face="bold",size=10), 
         axis.title.x=element_blank(),
@@ -302,4 +302,143 @@ summary(biofilmLMM)
 
 staphylokinaseLMM = lme4::lmer( staphylokinaseZO ~ (1 | patient) + Healed , data=ZeroOneNormed, REML = F)
 summary(staphylokinaseLMM)
+
+
+
+# Figure S_? : Repeat de-duplication but use MEDIAN values instead to mitigate effect of extreme values 
+#######################################################################################################
+Medians = FullData %>% group_by(patient, Healed, Healed_by_12) %>% summarize(med_staphyloxanthin = median(logStaphyloxanthin), med_biofilm = median(logBiofilm), med_siderophore = median(siderophore_normalized), med_staphylokinase = median(staphylokinase_normalized,na.rm=T))
+
+T_median_biofilm = t.test(Medians$med_biofilm~ Medians$Healed)
+p_median_biofilm = round(T_median_biofilm$p.value, 4)
+
+T_median_siderophore = t.test(Medians$med_siderophore~Medians$Healed)
+p_median_siderophore = round(T_median_siderophore$p.value, 4)
+
+T_median_staphyloxanthin = t.test(Medians$med_staphyloxanthin~Medians$Healed)
+p_median_staphyloxanthin = round(T_median_staphyloxanthin$p.value, 4)
+
+T_median_staphylokinase = t.test(Medians$med_staphylokinase~Medians$Healed)
+p_median_staphylokinase = round(T_median_staphylokinase$p.value, 4)
+
+
+
+# Figure d(ii) median biofilm production per patient
+##################################################
+biofilm_boxplot_median = ggplot(data=Medians, aes(x=Healed, y=med_biofilm)) + geom_boxplot() + labs(x="Healing Outcome", y="Median normalized biofilm") + 
+  geom_jitter(aes(color=Healed),size=3, height=0)+  theme_classic()+
+  theme(axis.title.x = element_text(face="bold",size=15),
+        axis.title.y = element_text(face="bold",size=15),
+        axis.text.y = element_text(face="bold",size=10), 
+        axis.text.x = element_text(face="bold",size=10),
+        plot.title = element_text(hjust = 0.5, face="bold", size=20))+ scale_color_manual(values=c("grey","orange2")) + annotate(geom="text", label=paste0("p=", p_median_biofilm), x=2, y=5, size=8)
+biofilm_boxplot_median
+
+# Figure d(ii) median siderophore production per patient
+######################################################
+siderophore_boxplot_median = ggplot(data=Medians, aes(x=Healed, y=med_siderophore)) + geom_boxplot() + labs(x="Healing Outcome", y="Median normalized siderophore") + 
+  geom_jitter(aes(color=Healed),size=3,height=0)+  theme_classic()+
+  theme(axis.title.x = element_text(face="bold",size=15),
+        axis.title.y = element_text(face="bold",size=15),
+        axis.text.y = element_text(face="bold",size=10), 
+        axis.text.x = element_text(face="bold",size=10),
+        plot.title = element_text(hjust = 0.5, face="bold", size=20))+ scale_color_manual(values=c("grey","orange2")) + annotate(geom="text", label=paste0("p=", p_median_siderophore), x=2, y=3, size=8)
+siderophore_boxplot_median
+
+# Figure d(ii) median staphylokinase production per patient
+##########################################################
+staphylokinase_boxplot_median = ggplot(data=Medians, aes(x=Healed, y=med_staphylokinase)) + geom_boxplot() + labs(x="Healing Outcome", y="Median normalized staphylokinase") + 
+  geom_jitter(aes(color=Healed),size=3, height=0)+  theme_classic()+
+  theme(axis.title.x = element_text(face="bold",size=15),
+        axis.title.y = element_text(face="bold",size=15),
+        axis.text.y = element_text(face="bold",size=10), 
+        axis.text.x = element_text(face="bold",size=10),
+        plot.title = element_text(hjust = 0.5, face="bold", size=20))+ scale_color_manual(values=c("grey","orange2")) + annotate(geom="text", label=paste0("p=", p_median_staphylokinase), x=2, y=3.5, size=8)
+staphylokinase_boxplot
+
+# Figure e(ii) median staphyloxanthin production per patient
+##########################################################
+staphyloxanthin_boxplot_median = ggplot(data=Medians, aes(x=Healed, y=med_staphyloxanthin)) + geom_boxplot() + labs(x="Healing Outcome", y="Median normalized staphyloxanthin") + 
+  geom_jitter(aes(color=Healed),size=3, height=0)+  theme_classic()+
+  theme(axis.title.x = element_text(face="bold",size=15),
+        axis.title.y = element_text(face="bold",size=15),
+        axis.text.y = element_text(face="bold",size=10), 
+        axis.text.x = element_text(face="bold",size=10),
+        plot.title = element_text(hjust = 0.5, face="bold", size=20))+ scale_color_manual(values=c("grey","orange2")) + annotate(geom="text", label=paste0("p=", p_median_staphyloxanthin), x=2, y=4.75, size=8)
+staphyloxanthin_boxplot_median
+
+
+
+pdf(width=14, height= 12, file="Figures/Figure1/FigS1A-D_Medians.pdf")
+grid.arrange(biofilm_boxplot_median, siderophore_boxplot_median, staphylokinase_boxplot_median, staphyloxanthin_boxplot_median, ncol=2)
+dev.off()
+
+
+
+# Figure S_? : Repeat de-duplication but use MEAN values instead to mitigate effect of extreme values 
+#######################################################################################################
+Means = FullData %>% group_by(patient, Healed, Healed_by_12) %>% summarize(mean_staphyloxanthin = mean(logStaphyloxanthin, na.rm=T), mean_biofilm = mean(logBiofilm, na.rm=T), mean_siderophore = mean(siderophore_normalized,na.rm=T), mean_staphylokinase = mean(staphylokinase_normalized,na.rm=T))
+
+T_mean_biofilm = t.test(Means$mean_biofilm~ Means$Healed)
+p_mean_biofilm = round(T_mean_biofilm$p.value, 4)
+
+T_mean_siderophore = t.test(Means$mean_siderophore~Means$Healed)
+p_mean_siderophore = round(T_mean_siderophore$p.value, 4)
+
+T_mean_staphyloxanthin = t.test(Means$mean_staphyloxanthin~Means$Healed)
+p_mean_staphyloxanthin = round(T_mean_staphyloxanthin$p.value, 4)
+
+T_mean_staphylokinase = t.test(Means$mean_staphylokinase~Means$Healed)
+p_mean_staphylokinase = round(T_mean_staphylokinase$p.value, 4)
+
+
+# Figure d(ii) mean biofilm production per patient
+##################################################
+
+biofilm_boxplot_mean = ggplot(data=Means, aes(x=Healed, y=mean_biofilm)) + geom_boxplot() + labs(x="Healing Outcome", y="Mean normalized biofilm") + 
+  geom_jitter(aes(color=Healed),size=3, height=0)+  theme_classic()+
+  theme(axis.title.x = element_text(face="bold",size=15),
+        axis.title.y = element_text(face="bold",size=15),
+        axis.text.y = element_text(face="bold",size=10), 
+        axis.text.x = element_text(face="bold",size=10),
+        plot.title = element_text(hjust = 0.5, face="bold", size=20))+ scale_color_manual(values=c("grey","orange2")) + annotate(geom="text", label=paste0("p=", p_mean_biofilm), x=2, y=5, size=8)
+biofilm_boxplot_mean
+
+# Figure d(ii) mean siderophore production per patient
+######################################################
+siderophore_boxplot_mean = ggplot(data=Means, aes(x=Healed, y=mean_siderophore)) + geom_boxplot() + labs(x="Healing Outcome", y="Mean normalized siderophore") + 
+  geom_jitter(aes(color=Healed),size=3, height=0)+  theme_classic()+
+  theme(axis.title.x = element_text(face="bold",size=15),
+        axis.title.y = element_text(face="bold",size=15),
+        axis.text.y = element_text(face="bold",size=10), 
+        axis.text.x = element_text(face="bold",size=10),
+        plot.title = element_text(hjust = 0.5, face="bold", size=20))+ scale_color_manual(values=c("grey","orange2")) + annotate(geom="text", label=paste0("p=", p_mean_siderophore), x=2, y=3, size=8)
+siderophore_boxplot_mean
+
+# Figure d(ii) mean staphylokinase production per patient
+##########################################################
+staphylokinase_boxplot_mean = ggplot(data=Means, aes(x=Healed, y=mean_staphylokinase)) + geom_boxplot() + labs(x="Healing Outcome", y="Mean normalized staphylokinase") + 
+  geom_jitter(aes(color=Healed),size=3, height=0)+  theme_classic()+
+  theme(axis.title.x = element_text(face="bold",size=15),
+        axis.title.y = element_text(face="bold",size=15),
+        axis.text.y = element_text(face="bold",size=10), 
+        axis.text.x = element_text(face="bold",size=10),
+        plot.title = element_text(hjust = 0.5, face="bold", size=20))+ scale_color_manual(values=c("grey","orange2")) + annotate(geom="text", label=paste0("p=", p_mean_staphylokinase), x=2, y=3.5, size=8)
+staphylokinase_boxplot
+
+# Figure e(ii) mean staphyloxanthin production per patient
+##########################################################
+staphyloxanthin_boxplot_mean = ggplot(data=Means, aes(x=Healed, y=mean_staphyloxanthin)) + geom_boxplot() + labs(x="Healing Outcome", y="Mean normalized staphyloxanthin") + 
+  geom_jitter(aes(color=Healed),size=3, height=0)+  theme_classic()+
+  theme(axis.title.x = element_text(face="bold",size=15),
+        axis.title.y = element_text(face="bold",size=15),
+        axis.text.y = element_text(face="bold",size=10), 
+        axis.text.x = element_text(face="bold",size=10),
+        plot.title = element_text(hjust = 0.5, face="bold", size=20))+ scale_color_manual(values=c("grey","orange2")) + annotate(geom="text", label=paste0("p=", p_mean_staphyloxanthin), x=2, y=4.75, size=8) 
+staphyloxanthin_boxplot_mean
+
+
+pdf(width=14, height= 12, file="Figures/Figure1/FigS1A-D_Means.pdf")
+grid.arrange(biofilm_boxplot_mean, siderophore_boxplot_mean, staphylokinase_boxplot, staphyloxanthin_boxplot_mean, ncol=2)
+dev.off()
 

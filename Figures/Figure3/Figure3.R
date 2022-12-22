@@ -29,7 +29,7 @@ pvalLAC_DcrtN = round(WilcoxResultsPValues["LAC_dCrtN_1", "LAC"],4)
 pvalSA925_SA1088 = "7.4e-04"
 
 Woundplot = ggplot(data=woundsize, aes(x=group, y=day_14_change))+geom_boxplot(size=.25, outlier.shape = NA)+
-  geom_jitter(aes(color=group, shape=sex),size=2, width=.2)+
+  geom_jitter(aes(color=group, shape=sex),size=2, width=.2,height=0)+
   labs(x="group", y="% original wound size at day 14")+ theme_classic()+
   theme(axis.title.x = element_text(face="bold",size=15))+
   theme(axis.title.y = element_text(face="bold",size=15))+

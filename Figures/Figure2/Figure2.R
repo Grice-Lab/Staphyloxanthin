@@ -52,7 +52,7 @@ IsolatesOrder = unique((patient141 %>% arrange(visit))$isolate)
 patient141$weekcollect = factor(patient141$visit*2)
 
 colorpalette = setdiff(rev(RColorBrewer::brewer.pal(10, "Spectral")), "#E6F598")
-Patient141Plot <- ggplot(data=patient141, aes(x=isolate, y=staphyloxanthin)) + geom_boxplot(outlier.shape=NA,size=.1) + geom_jitter(width=.25, aes(color=weekcollect), size=2)+ scale_color_manual(values=colorpalette)+
+Patient141Plot <- ggplot(data=patient141, aes(x=isolate, y=staphyloxanthin)) + geom_boxplot(outlier.shape=NA,size=.1) + geom_jitter(width=.25, aes(color=weekcollect), size=2,height=0)+ scale_color_manual(values=colorpalette)+
   theme_classic()+
   theme(axis.title.x = element_text(face="bold",size=15), 
         axis.title.y = element_text(face="bold",size=15),
@@ -79,7 +79,7 @@ LAC_CrtN =  round((pairwise_Ts$p.value)["USA300 LAC", "USA300 dCrtN"], 4)
 
 
 StrainXanthinPlot = ggplot(StaphyloxanthinTestStrains, aes(x=strain,y=average))+geom_boxplot(fill="darkorange", width = 0.5, size=.25)+ 
-  geom_jitter(width=.15)+
+  geom_jitter(width=.15,height=0)+
   labs(y="staphyloxanthin production (OD465 nm)",x="strain")+
   theme(plot.title = element_text(hjust = 0.5, face="bold", size=20),
         axis.title.x = element_text(face="bold",size=15),
@@ -113,7 +113,7 @@ SA925_thymol = round(StrainsH202Ttests["SA925 +thymol","SA925"],4)
 SA1088_SA925thymol = round(StrainsH202Ttests["SA925 +thymol","SA1088"],4)
 
 Strains_Survival_Thymol = ggplot(StrainsH202, aes(x=strain,y=sample))+geom_boxplot(fill="dodgerblue", width = 0.5, size=.25)+
-  geom_jitter(width=.2)+
+  geom_jitter(width=.2,height=0)+
   labs(y="% Survival After Hydrogen Peroxide",x="strain")+
   theme(plot.title = element_text(hjust = 0.5, face="bold", size=20))+
   scale_x_discrete(limits = peroxide_order)+
@@ -183,11 +183,12 @@ ClinicalStrainsComparePoly = StrainsPolymixin %>% filter(strain %in% c("SA925", 
 
 polymixin_t_USA300 = t.test(USA300StrainsComparePoly$survival ~ USA300StrainsComparePoly$strain)
 polymixin_t_clinical = t.test(ClinicalStrainsComparePoly$survival ~ ClinicalStrainsComparePoly$strain)
-p_polymixin300 = round(polymixin_t_USA3ThymolStrains00$p.value, 4)
+
+p_polymixin300 = round(polymixin_t_USA300$p.value, 4)
 p_polymixinClinical = round(polymixin_t_clinical$p.value, 4)
 
 PolymixinPlot = ggplot(StrainsPolymixin, aes(x=strain,y=survival))+geom_boxplot(fill="dodgerblue", width = 0.5, size=.2 )+
-  geom_jitter(width=.15)+ theme_classic() +
+  geom_jitter(width=.15,height=0)+ theme_classic() +
   labs(y="% Survival With Polymixin" ,x="strain")+
   theme(axis.title.x = element_text(face="bold",size=15),
         axis.title.y = element_text(face="bold",size=15),
