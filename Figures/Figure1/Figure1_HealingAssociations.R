@@ -80,6 +80,11 @@ biofilm_plot = ggplot(data=OrderedBiofilm, aes(x=Healed, y=IsolateNum, fill=biof
         axis.text.y = element_text(face="bold",size=15),axis.text.x = element_text(face="bold",size=15),
         plot.title=element_text(hjust=.5, face="bold", size=20) ) + ggtitle("Biofilm Production") 
 
+biofilm_plot_viridis = ggplot(data=OrderedBiofilm, aes(x=Healed, y=IsolateNum, fill=biofilm)) + geom_tile()+scale_fill_viridis(option="plasma")+
+  labs(y="Isolates", fill="Biofilm", x="")+theme_classic() +
+  theme(axis.title.x = element_text(face="bold",size=15), axis.title.y = element_text(face="bold",size=15), 
+        axis.text.y = element_text(face="bold",size=15),axis.text.x = element_text(face="bold",size=15),
+        plot.title=element_text(hjust=.5, face="bold", size=20) ) + ggtitle("Biofilm Production") 
 
 # Figure 1C(i): Siderophore production
 #################################
@@ -99,7 +104,6 @@ siderophore_plot = ggplot(data=OrderedSiderophore, aes(x=Healed, y=IsolateNum, f
   theme(axis.title.x = element_text(face="bold",size=15), axis.title.y = element_text(face="bold",size=15), 
         axis.text.y = element_text(face="bold",size=15),axis.text.x = element_text(face="bold",size=15),
         plot.title=element_text(hjust=.5, face="bold", size=20) ) + ggtitle("Siderophore Production") 
-
 
 
 
@@ -123,11 +127,13 @@ staphylokinase_plot = ggplot(data=Orderedstaphylokinase, aes(x=Healed, y=Isolate
         plot.title=element_text(hjust=.5, face="bold", size=20) ) + ggtitle("Staphylokinase Production") 
 
 
-staphylokinase_plot
 
 pdf(width=24, height= 6.171429, file="Figures/Figure1/Fig1B_E.pdf")
 grid.arrange(biofilm_plot, siderophore_plot, staphyloxanthin_plot, staphylokinase_plot, ncol=4)
 dev.off()
+
+
+
 
 # Figure 1E(i) staphyloxanthin production
 ######################################
@@ -277,7 +283,7 @@ staphyloxanthin_boxplotS1 = ggplot(data=Maxed, aes(x=Healed_by_12, y=max_staphyl
         plot.title = element_text(hjust = 0.5, face="bold", size=20))+ scale_color_manual(values=c("grey","orange2")) + annotate(geom="text", label=paste0("p=", p_staphyloxanthin12), x=2, y=4.75, size=8)
 staphyloxanthin_boxplotS1
 
-pdf(width=14, height= 12, file="Figures/Figure1/FigS1A-D.pdf")
+pdf(width=11, height= 12, file="Figures/Figure1/FigS1A-D.pdf")
 grid.arrange(biofilm_boxplotS1, siderophore_boxplotS1, staphylokinase_boxplotS1, staphyloxanthin_boxplotS1, ncol=2)
 dev.off()
 
@@ -365,11 +371,8 @@ staphyloxanthin_boxplot_median = ggplot(data=Medians, aes(x=Healed, y=med_staphy
         axis.text.y = element_text(face="bold",size=10), 
         axis.text.x = element_text(face="bold",size=10),
         plot.title = element_text(hjust = 0.5, face="bold", size=20))+ scale_color_manual(values=c("grey","orange2")) + annotate(geom="text", label=paste0("p=", p_median_staphyloxanthin), x=2, y=4.75, size=8)
-staphyloxanthin_boxplot_median
 
-
-
-pdf(width=14, height= 12, file="Figures/Figure1/FigS1A-D_Medians.pdf")
+pdf(width=9, height= 12, file="Figures/Figure1/FigS1A-D_Medians.pdf")
 grid.arrange(biofilm_boxplot_median, siderophore_boxplot_median, staphylokinase_boxplot_median, staphyloxanthin_boxplot_median, ncol=2)
 dev.off()
 
@@ -438,7 +441,111 @@ staphyloxanthin_boxplot_mean = ggplot(data=Means, aes(x=Healed, y=mean_staphylox
 staphyloxanthin_boxplot_mean
 
 
-pdf(width=14, height= 12, file="Figures/Figure1/FigS1A-D_Means.pdf")
+pdf(width=9, height= 12, file="Figures/Figure1/FigS1A-D_Means.pdf")
 grid.arrange(biofilm_boxplot_mean, siderophore_boxplot_mean, staphylokinase_boxplot, staphyloxanthin_boxplot_mean, ncol=2)
 dev.off()
+
+
+# What happens when we consider the first isolates collected 
+# post-debridement? (in the time post-debridement, wounds are
+# supposed to be in the inflammatory/acute healing phase)
+# (only includes 45 patients because 15 of them only had
+# isolates from timepoint 0, which is pre-debridement)
+#########################################################
+
+minVisitDF = data.frame()
+maxVisitDF = data.frame()
+
+# Aside from the pre-debridement timepoint, 
+# Take first timepoint there's a S. aureus isolate from in each patient
+# if there are multiple timepoints, average their values for the phenotypes together
+NonZero = FullData %>% filter(visit!=0)
+for(p in unique(FullData$patient)){
+  PatientData = NonZero %>% subset(patient==p)
+  minvis = min(PatientData$visit)
+  
+  maxvis = max(PatientData$visit)
+
+  
+  PatientDataMinimumVis = PatientData %>% filter(visit==minvis)
+  PatientDataMaximumVis = PatientData %>% filter(visit==maxvis)
+  
+  stx=mean(PatientDataMinimumVis$logStaphyloxanthin, na.rm=T)
+  stx_maxvisit=mean(PatientDataMaximumVis$logStaphyloxanthin, na.rm=T)
+  
+  staphylokinase=mean(PatientDataMinimumVis$staphylokinase_normalized, na.rm=T)
+  staphylokinase_maxvisit = mean(PatientDataMaximumVis$logStaphyloxanthin, na.rm=T)
+  
+  biofilm=mean(PatientDataMinimumVis$logBiofilm, na.rm=T)
+  biofilm_maxvisit =  mean(PatientDataMaximumVis$logBiofilm, na.rm=T)
+  
+  siderophores=mean(PatientDataMinimumVis$siderophore_normalized, na.rm=T)
+  siderophores_maxvisit = mean(PatientDataMaximumVis$siderophore_normalized, na.rm=T)
+  
+  rowitem = c(p, minvis, stx, staphylokinase, biofilm, siderophores )
+  rowitem_max = c(p, maxvis, stx_maxvisit, staphylokinase_maxvisit, biofilm_maxvisit, siderophores_maxvisit )
+  minVisitDF = rbind(minVisitDF, rowitem )
+  maxVisitDF = rbind(maxVisitDF, rowitem_max )
+}
+
+colnames(minVisitDF) = c("patient", "Visit", "Staphyloxanthin", "Staphylokinase", "Biofilm", "Siderophores")
+
+minVisitDF = minVisitDF %>% left_join(FullData %>% select(patient,Healed ), by="patient") %>% unique()
+
+minVisitDF = minVisitDF %>% filter(!is.na(Staphyloxanthin))
+
+T_firstIsolate_staphyloxanthin = t.test(minVisitDF$Staphyloxanthin~minVisitDF$Healed)
+p_firstIsolate_staphyloxanthin = round(T_firstIsolate_staphyloxanthin$p.value, 4)
+
+T_firstIsolate_Staphylokinase = t.test(minVisitDF$Staphylokinase~minVisitDF$Healed)
+p_firstIsolate_Staphylokinase = round(T_firstIsolate_Staphylokinase$p.value, 4)
+
+T_firstIsolate_biofilm = t.test(minVisitDF$Biofilm~minVisitDF$Healed)
+p_firstIsolate_biofilm = round(T_firstIsolate_biofilm$p.value, 4)
+
+T_firstIsolate_siderophore = t.test(minVisitDF$Siderophores~minVisitDF$Healed)
+p_firstIsolate_siderophore = round(T_firstIsolate_siderophore$p.value, 4)
+
+
+
+MeanByVisit = FullData %>% group_by(patient,visit) %>% summarize(patient=patient, visit=visit,
+                                                                 staphyloxanthinmean=mean(logStaphyloxanthin),
+                                                                 biofilmmean=mean(logBiofilm),
+                                                                 siderophoremean=mean(siderophore_normalized), 
+                                                                 staphylokinasemean=mean(staphylokinase_normalized, na.rm=T),
+                                                                 week_healed=week_healed)
+
+MeanByVisit = MeanByVisit %>% unique()
+MeanByVisit$week = MeanByVisit$week_healed
+
+WeekPalette =RColorBrewer::brewer.pal(11, "Spectral")
+
+darkpurple =RColorBrewer::brewer.pal(11, "PuOr")[10]
+WeekPalette = c("#8B0000", WeekPalette)
+
+WeekPalette = c("black", WeekPalette)
+WeekPalette = append(WeekPalette, darkpurple)
+colormap=data.frame(colors=WeekPalette, week=c(0,2,4,6,8,10,12,14,16,18,20,22,24,26))
+
+
+MeanByVisit_healed = MeanByVisit %>% filter(!is.na(week_healed))
+MeanByVisit_unhealed = MeanByVisit %>% filter(is.na(week_healed))
+
+
+summary(lm(MeanByVisit_unhealed$staphyloxanthinmean~ MeanByVisit_unhealed$visit))
+summary(lm(MeanByVisit_unhealed$biofilmmean~ MeanByVisit_unhealed$visit))
+summary(lm(MeanByVisit_unhealed$staphylokinasemean~ MeanByVisit_unhealed$visit))
+summary(lm(MeanByVisit_unhealed$siderophoremean~ MeanByVisit_unhealed$visit))
+
+summary(lm(MeanByVisit_healed$staphyloxanthinmean~ MeanByVisit_healed$visit))
+summary(lm(MeanByVisit_healed$biofilmmean~ MeanByVisit_healed$visit))
+summary(lm(MeanByVisit_healed$staphylokinasemean~ MeanByVisit_healed$visit))
+summary(lm(MeanByVisit_healed$siderophoremean~ MeanByVisit_healed$visit))
+
+summary(lm(MeanByVisit$staphyloxanthinmean~ MeanByVisit$visit))
+
+
+MeanByVisit$Healed = if_else(is.na(MeanByVisit$week_healed), "Unhealed", "Healed")
+ggplot(MeanByVisit, aes(x=visit, y=staphyloxanthinmean, color=factor(Healed))) + geom_point() + scale_color_manual(values=c("dodgerblue", "darkorange")) + theme_classic()
+
 
