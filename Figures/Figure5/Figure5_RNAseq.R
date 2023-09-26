@@ -21,6 +21,7 @@ RNACountsPath = "Data/RNASeq/RNACounts.rda"
 bamdirpath = "Data/RNASeq/bams/"
 GTFPath = "Data/RNASeq/SA925_ref.gff"
 StressGeneMap = "Data/RNASeq/StressResponseGenesInclude.csv"
+PhageCDS=read.csv("Data/RNASeq/PhageCDS.csv") %>% select(PGAPid)
 
 
 ########################
@@ -187,8 +188,6 @@ StressResponsive925stress$comparison = "SA925_h2o2"
 StressResponsive925 = StressResponsive925stress %>% select(GeneAdjust, comparison, log2FoldChange, padj)
 order = StressResponsive925stress$GeneAdjust
 
-
-
 # Stress genes in SA1088 re: stress
 results_SA1088_Stressjoined = results_SA1088_StressDF %>% left_join(stressGenes, by="AnnotID")
 results_SA1088stress = results_SA1088_Stressjoined %>% filter(!is.na(GeneName))
@@ -223,15 +222,36 @@ StressGenesMeltedPvalues = StressGenesMeltedPvalues %>%  mutate(sigLabel=case_wh
                                                                                    TRUE~ ""))
 StressGenesMeltedPvalues
 StressGenesMeltedLFCs = StressGenesMeltedLFCs %>% left_join(StressGenesMeltedPvalues %>% select(comparison, GeneAdjust, sigLabel), by=c("comparison", "GeneAdjust"))
-
+StressGenesMeltedLFCs
 
 
 StressPlot = ggplot(StressGenesMeltedLFCs, aes(x=comparison, y=GeneAdjust, fill=value)) + geom_tile() + scale_fill_viridis(option="plasma") + geom_text(aes(label=sigLabel), vjust=.7, color="white") + theme_classic() + labs(fill="log2FC") + ylab("Gene")
 StressPlot$data$GeneAdjust = factor(StressPlot$data$GeneAdjust, levels=rev(order))
 StressPlot$data$comparison = factor(StressPlot$data$comparison, levels=c("SA925_1088_H202", "SA925_h2o2", "SA1088_h2o2"))
+
+grepl(Pattern, lst_B)
 ggsave(StressPlot, file="/Users/amycampbell/Desktop/GriceLabGit/DFUStrainsWGS/XanthinPaperFigures/UTDheatmap_stressOnly.pdf", height=15, width=8)
 
+# Filter to significant genes, or genes in operons with significant genes
+#########################################################################
+# operon strings to keep full operon of
+signif_operons_keep_strings=c("wal","mut","pol", "rec", "ssb", "add","uvr","czr", "mnt", "sbn", "sir","sfa","clp","mcs","suf","gro")
+patterntest=paste(signif_operons_keep_strings,collapse="|")
 
+# Phage CDS
+###########
+PhageCDS$AnnotID = sapply(PhageCDS$PGAPid, function(x) str_remove(x,"ID="))
+
+StressGenesInPhage = stressGenes %>% filter(AnnotID %in% PhageCDS$AnnotID )
+
+StressGenesMeltedLFCsKeepGenes= StressGenesMeltedLFCs %>% filter( (sigLabel %in% c("*", "**", "***", "****")) | grepl(patterntest, GeneAdjust))
+StressGenesMeltedLFCs_Filtered = StressGenesMeltedLFCs %>% filter(GeneAdjust %in% StressGenesMeltedLFCsKeepGenes$GeneAdjust )
+StressGenesMeltedLFCs_Filtered = StressGenesMeltedLFCs_Filtered %>% filter(!(GeneAdjust %in% StressGenesInPhage$GeneName))
+StressPlotFiltered = ggplot(StressGenesMeltedLFCs_Filtered, aes(x=comparison, y=GeneAdjust, fill=value)) + geom_tile() + scale_fill_viridis(option="plasma") + geom_text(aes(label=sigLabel), vjust=.7, color="white") + theme_classic() + labs(fill="log2FC") + ylab("Gene")
+StressPlotFiltered$data$GeneAdjust = factor(StressPlotFiltered$data$GeneAdjust, levels=rev(order))
+StressPlotFiltered$data$comparison = factor(StressPlotFiltered$data$comparison, levels=c("SA925_1088_H202", "SA925_h2o2", "SA1088_h2o2"))
+
+ggsave(StressPlotFiltered, file="Figures/Figure5/UTD_Heatmap.pdf", height=15, width=5.75)
 
 # Making heatmap with select toxins
 ######################################
@@ -240,6 +260,27 @@ AnnotIDsToxins = c("cds-pgaptmp_000020", "cds-pgaptmp_000025", "cds-pgaptmp_0000
                    "cds-pgaptmp_002323", "cds-pgaptmp_002324", "cds-pgaptmp_002725",
                    "cds-pgaptmp_002743", "cds-pgaptmp_002745", "cds-pgaptmp_001629", 
                    "cds-pgaptmp_001630", "cds-pgaptmp_001631","cds-pgaptmp_001632", "cds-pgaptmp_000173", "cds-pgaptmp_000939")
+# pgaptmp_000020 -- entA
+# pgaptmp_000025 -- sak
+# pgaptmp_000027 -- scn
+# pgaptmp_001239 -- seL/entL 
+# pgaptmp_001240 -- sec2/entC2
+# pgaptmp_001993 -- entH
+# pgaptmp_002323 -- hlgB
+# pgaptmp_002324 -- hlgC
+# pgaptmp_002725 -- hld
+# pgaptmp_002743 -- hlb
+# pgaptmp_002745 -- entK (not EntQ)
+# pgaptmp_001629 PSmAlpha-1
+# pgaptmp_001630 PSMalpha-2
+# pgaptmp_001631 PSMalpha-3
+# pgaptmp_001632 PSMalpha-4
+# pgaptmp_000173 -- traP
+# pgaptmp_000939 -- hly
+
+
+
+
 
 Toxin925 = results_SA925_StressDF %>% filter(AnnotID %in% AnnotIDsToxins) %>% select(GeneAdjust, log2FoldChange, padj) 
 Toxin925$Comparison = "SA925_Stress"
@@ -268,5 +309,5 @@ MeltedToxins = MeltedToxins %>% mutate(ptext = case_when(padj < .05 & padj >= .0
 ToxinHeatMap = ggplot(MeltedToxins, aes(x=Comparison, y=GeneAdjust, fill=log2FoldChange)) + geom_tile() + scale_fill_viridis(option="plasma")  + geom_text(aes(label=ptext),color="white")+ theme_classic() +theme(axis.text.y=element_text(size=15)) + labs(fill="log2FC") + ylab("Gene")
 ToxinHeatMap$data$Comparison = factor(ToxinHeatMap$data$Comparison, levels=c("SA925_SA1088_Control", "SA925_SA1088_Stress", "SA925_Stress", "SA1088_Stress"))
 
-ToxinHeatMap
+
 

@@ -1,41 +1,38 @@
 # Amy Campbell
-# 2022
-# Programmatic comparison of NucDiff results for DORN925 vs. each of the other 13 isolates in Patient # 141
-# Previously done by looking for presence/absence of each variant found in DORN1000 compared to DORN925
-# (where DORN925 was 'reference' and DORN1000 was 'query')
-# Now, doing with DORN1088 because it's the one we used in the mouse experiments, RNAseq
+# 2022, updated 2023
+# Programmatic comparison of NucDiff results for SA925 vs. each of the other 13 isolates in Patient # 141
 
 library(dplyr)
 
-# Get list of variants & locations in DORN1088 compared to DORN925
+# Get list of variants & locations in SA1088 compared to SA925
 ##################################################################
 
-SNPs1088 = read.csv2("data/nucdiff925/NucDiff_925_1088/results/DORN925_DORN1088Comparison_ref_snps.gff",comment.char = "#", sep="\t",header=F)
+SNPs1088 = read.csv2("Data/WGSData/NucDiffOutput/NucDiff_925_1088/results/SA925_SA1088Comparison_ref_snps.gff",comment.char = "#", sep="\t",header=F)
 
 colnames(SNPs1088) = c("Contig", "NucDiffVersion","SO", "Start", "End", "Blank1", "Blank2", "Blank3", "Description")
 SNPs1088 = SNPs1088 %>% select(Start, End, Description)
 
 
-Structural1088 = read.csv2("data/nucdiff925/NucDiff_925_1088/results/DORN925_DORN1088Comparison_ref_struct.gff",comment.char = "#", sep="\t",header=F)
+Structural1088 = read.csv2("Data/WGSData/NucDiffOutput/NucDiff_925_1088/results/SA925_SA1088Comparison_ref_struct.gff",comment.char = "#", sep="\t",header=F)
 colnames(Structural1088) = c("Contig", "NucDiffVersion","SO", "Start", "End", "Blank1", "Blank2", "Blank3", "Description")
 Structural1088 = Structural1088 %>% select(Start, End, Description)
 
-Additional1088 = read.csv2("data/nucdiff925/NucDiff_925_1088/results/DORN925_DORN1088Comparison_ref_additional.gff",comment.char = "#", sep="\t",header=F)
+Additional1088 = read.csv2("Data/WGSData/NucDiffOutput/NucDiff_925_1088/results/SA925_SA1088Comparison_ref_additional.gff",comment.char = "#", sep="\t",header=F)
 colnames(Additional1088) = c("Contig", "NucDiffVersion","SO", "Start", "End", "Blank1", "Blank2", "Blank3", "Description")
 Additional1088 = Additional1088 %>% select(Start, End, Description)
 
 Variants1088 = rbind(SNPs1088,Structural1088)
 Variants1088= rbind(Variants1088, Additional1088)
 
-genomevector=c("DORN1088", "DORN1000", "DORN1038", "DORN1194", "DORN1061", "DORN1037", "DORN999", "DORN976", "DORN933", "DORN929", "DORN882", "DORN881", "DORN880")
+genomevector=c("SA1088", "SA1000", "SA1038", "SA1194", "SA1061", "SA1037", "SA999", "SA976", "SA933", "SA929", "SA882", "SA881", "SA880")
 Results=Variants1088
 for(GenomeString in genomevector){
-  ComparisonString=paste0("DORN925_", GenomeString)
-  JustNumbers = stringr::str_remove_all(ComparisonString, "DORN")
+  ComparisonString=paste0("SA925_", GenomeString)
+  JustNumbers = stringr::str_remove_all(ComparisonString, "SA")
   print(ComparisonString)
-  SNPFile =paste("data/nucdiff925/NucDiff_", JustNumbers, "/results/", ComparisonString, "Comparison_ref_snps.gff",sep="")
-  AdditionalFile =paste("data/nucdiff925/NucDiff_", JustNumbers, "/results/", ComparisonString, "Comparison_ref_additional.gff",sep="")
-  StructFile =paste("data/nucdiff925/NucDiff_", JustNumbers, "/results/", ComparisonString, "Comparison_ref_struct.gff",sep="")
+  SNPFile =paste("Data/WGSData/NucDiffOutput/NucDiff_", JustNumbers, "/results/", ComparisonString, "Comparison_ref_snps.gff",sep="")
+  AdditionalFile =paste("Data/WGSData/NucDiffOutput/NucDiff_", JustNumbers, "/results/", ComparisonString, "Comparison_ref_additional.gff",sep="")
+  StructFile =paste("Data/WGSData/NucDiffOutput/NucDiff_", JustNumbers, "/results/", ComparisonString, "Comparison_ref_struct.gff",sep="")
   
   #SNPdf = read.csv2(SNPFile,comment.char = "#", sep="\t",header=F)
   SNPdf = tryCatch({read.csv2(SNPFile,comment.char = "#", sep="\t",header=F)}, error=function(errmessage){
@@ -89,13 +86,13 @@ for(GenomeString in genomevector){
 
 
 # Variants present in the three low but absent from the high
-ConsistentVariants = Results %>% filter(DORN1000==1 &  DORN1088==1 & DORN1038==1 & DORN1194==0 & DORN1037==0 & DORN880==0 & DORN881==0 & DORN976==0 & DORN999==0 & DORN1061==0 & DORN882==0 & DORN933==0 & DORN929==0)
+ConsistentVariants = Results %>% filter(SA1000==1 &  SA1088==1 & SA1038==1 & SA1194==0 & SA1037==0 & SA880==0 & SA881==0 & SA976==0 & SA999==0 & SA1061==0 & SA882==0 & SA933==0 & SA929==0)
 
 # Variants present in the three low and only partially present in the high 
-MediumConsistentVariants= Results %>% filter(DORN1000==1 &  DORN1088==1 & DORN1038==1 & DORN1194<1 & DORN1037<1 & DORN880<1 & DORN881<1 & DORN976<1 & DORN999<1 & DORN1061<1 & DORN882<1 & DORN933<1 & DORN929<1)
+MediumConsistentVariants= Results %>% filter(SA1000==1 &  SA1088==1 & SA1038==1 & SA1194<1 & SA1037<1 & SA880<1 & SA881<1 & SA976<1 & SA999<1 & SA1061<1 & SA882<1 & SA933<1 & SA929<1)
 
 # Variants absent from the high but at least partially present in all the low
-AlsoMediumConsistentVariants = Results %>% filter(DORN1000>0 &  DORN1088>0 & DORN1038>0 & DORN1194==0 & DORN1037==0 & DORN880==0 & DORN881==0 & DORN976==0 & DORN999==0 & DORN1061==0 & DORN882==0 & DORN933==0 & DORN929==0)
+AlsoMediumConsistentVariants = Results %>% filter(SA1000>0 &  SA1088>0 & SA1038>0 & SA1194==0 & SA1037==0 & SA880==0 & SA881==0 & SA976==0 & SA999==0 & SA1061==0 & SA882==0 & SA933==0 & SA929==0)
 
 
-write.csv(Results %>% arrange(Start), file="data/nucdiff925/Comparisons925_1088_All.csv")
+write.csv(Results %>% arrange(Start), file="Data/WGSData/NucDiffOutput/Comparisons925_1088_All.csv")

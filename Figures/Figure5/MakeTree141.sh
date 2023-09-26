@@ -8,17 +8,21 @@
 #####################
 conda activate prokenv
 
+# "genomes" folder in Data/ should contain just SA1088, SA1000, SA1038, SA1061,
+# SA1037, SA999, SA976, SA933, SA929, SA882, SA881, SA880, CC1_MW2(outgroup)
+
 gpath="../../Data/genomes/"
 GFFs="../../Data/genomes/GFFfiles/"
 justgffs="../../Data/genomes/GFFfiles/JustGFFs/"
 roaryoutput="../../Data/genomes/Roary/"
-
+trees="../../Data/Patient141tree/"
+mkdir -p $trees 
 mkdir -p $justgffs
 mkdir -p $GFFs
 
 extensionfasta="_Final.fasta"
 gffext=".gff"
-for genome in DORN1000 DORN1037 DORN1038 DORN1061 DORN1088 DORN1194 DORN880 DORN881 DORN882 DORN925 DORN929 DORN933 DORN976 DORN999 CC1_MW2; do 
+for genome in SA1000 SA1037 SA1038 SA1061 SA1088 SA1194 SA880 SA881 SA882 SA925 SA929 SA933 SA976 SA999 CC1_MW2; do 
 
    genomefile=$gpath$genome$extensionfasta
    prefixstring=$genome
@@ -43,3 +47,4 @@ genealnstring="core_gene_alignment.aln"
 coregenealignment=$roaryoutput$genealnstring
 
 raxmlHPC-PTHREADS -T 4 -m GTRGAMMA -p 19104 -# 100 -s $coregenealignment -n RaxMLTree141Isolates
+mv *RaxMLTree141Isolates* $trees 
