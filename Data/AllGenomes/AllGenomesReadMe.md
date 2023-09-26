@@ -1,0 +1,1 @@
+Note: Genomes to fill this folder are in NCBI under PRJNA1015705. The IDs used in this  repo are the listed organism in genbank (e.g.  Staphylococcus aureus SA1523 corresponds to SA1523 in all the metadata provided here and in the supplementary information)
