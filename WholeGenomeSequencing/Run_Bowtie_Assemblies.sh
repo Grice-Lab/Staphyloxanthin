@@ -6,21 +6,22 @@
 # In order to assess breadth of coverage, depth
 # This is used for the first round of genome cleaning
 
-source /home/acampbe/software/miniconda3/bin/activate BowtieEnv
+conda activate BowtieEnv
 
-mkdir -p /home/acampbe/DFU/data/AlignmentCoverage/CompleteCoverageData/BowtieDatabases/
+mkdir -p ../Data/BowtieDatabases/
+mkdir -p ../Data/BowtieAlignments/
 
-export BOWTIE2_INDEXES=/home/acampbe/DFU/data/AlignmentCoverage/CompleteCoverageData/BowtieDatabases/
 
+reads=TrimmedReads/
+assemblies="../Data/AllGenomes/"
+
+export BOWTIE2_INDEXES=../Data/BowtieDatabases/
 
 # Build bowtie2 databases for every genome in the assembly folder
-outputfolder="/home/acampbe/DFU/data/AlignmentCoverage/CompleteCoverageData/InitialAlignment/"
+outputfolder="../Data/BowtieAlignments/"
 
 mkdir -p $outputfolder
 
-
-Trimmed_FastQs="/project/grice/storage/DFUShortReads2022/trimmedreads/"
-Assemblies="/project/grice/storage/DFUShortReads2022/assemblies"
 
 for filename in $Assemblies/*.fasta; do 
 	filenamestring=$(basename $filename)
@@ -29,7 +30,7 @@ for filename in $Assemblies/*.fasta; do
 	noext=${filenamestring/$ext/$blank}
 	
 	bowtie2-build $filename $noext
-	mv *.bt2 /home/acampbe/DFU/data/AlignmentCoverage/CompleteCoverageData/BowtieDatabases/
+	mv *.bt2 ../Data/BowtieDatabases/
 	
 	sam_ext=".sam"
 	fwd_Ext="trimmedgalore_val_1.fastq"
