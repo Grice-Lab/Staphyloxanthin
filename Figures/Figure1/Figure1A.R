@@ -6,6 +6,7 @@ library("dplyr")
 library("RColorBrewer")
 library("forcats")
 
+# set to wherever you've cloned the repo
 setwd("/Users/amycampbell/Desktop/GriceLabGit/Staphyloxanthin/")
 
 FullData = read.csv("Data/InVitroData/staphyloxanthin_paper_updated.csv")

@@ -10,6 +10,8 @@ library("dplyr")
 library("bestNormalize")
 
 set.seed(19104)
+
+# Set to wherever you've cloned the repo
 setwd("/Users/amycampbell/Desktop/GriceLabGit/Staphyloxanthin/")
 
 FullData = read.csv("Data/InVitroData/staphyloxanthin_paper_updated.csv")

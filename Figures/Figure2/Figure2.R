@@ -8,6 +8,14 @@ library("RColorBrewer")
 library("forcats")
 library("ggpubr")
 
+WeekPalette =RColorBrewer::brewer.pal(11, "Spectral")
+
+darkpurple =RColorBrewer::brewer.pal(11, "PuOr")[10]
+WeekPalette = c("#8B0000", WeekPalette)
+
+WeekPalette = c("black", WeekPalette)
+WeekPalette = append(WeekPalette, darkpurple)
+colormap=data.frame(colors=WeekPalette, week=c(0,2,4,6,8,10,12,14,16,18,20,22,24,26))
 
 # Read in data
 ####################
@@ -33,6 +41,7 @@ StrainsPolymixin = read.csv("Data/InVitroData/polymixin_strain.csv")
 
 # Figure 2A
 ###########
+FullData$week = 2*(FullData$visit)
 Staphyloxanthin_by_patient = ggplot(data=FullData, aes(x=factor(patient), y=staphyloxanthin, color=staphyloxanthin))+
   scale_color_gradient(low = "dodgerblue", high = "darkorange")+geom_point()+
  theme_classic()+
@@ -46,13 +55,27 @@ Staphyloxanthin_by_patient = ggplot(data=FullData, aes(x=factor(patient), y=stap
 
 ggsave(Staphyloxanthin_by_patient, file="Figures/Figure2/Figure2A.pdf", width=9, height=5)
 
+Staphyloxanthin_by_patient = ggplot(data=FullData, aes(x=factor(patient), y=staphyloxanthin, color=factor(week)))+
+  scale_color_manual(values = colormap$colors)+geom_point()+
+  theme_classic()+
+  theme(plot.title = element_text(hjust = 0.5, face="bold", size=20), 
+        axis.title.x = element_text(face="bold",size=15), 
+        axis.title.y = element_text(face="bold",size=15),
+        axis.text.y = element_text(face="bold",size=10),
+        axis.text.x = element_text(face="bold",size=10, vjust=.5))+
+  labs(color="Week collected", x="DFU",y="Staphyloxanthin")+
+  theme(axis.text.x = element_text(angle = 90)) + geom_vline(xintercept = seq(.5, 61,1), linewidth=.05)
+
+ggsave(Staphyloxanthin_by_patient, file="Figures/Figure2/Figure2A_2023.pdf", width=9, height=3)
+
 # Figure 2B
 ###########
 IsolatesOrder = unique((patient141 %>% arrange(visit))$isolate)
-patient141$weekcollect = factor(patient141$visit*2)
-
-colorpalette = setdiff(rev(RColorBrewer::brewer.pal(10, "Spectral")), "#E6F598")
-Patient141Plot <- ggplot(data=patient141, aes(x=isolate, y=staphyloxanthin)) + geom_boxplot(outlier.shape=NA,size=.1) + geom_jitter(width=.25, aes(color=weekcollect), size=2,height=0)+ scale_color_manual(values=colorpalette)+
+patient141$week = factor(patient141$visit*2)
+colormap$week = factor(colormap$week)
+#colorpalette = setdiff(rev(RColorBrewer::brewer.pal(10, "Spectral")), "#E6F598")
+colorsdf =patient141 %>% select(week) %>% unique() %>% left_join(colormap, by="week")
+Patient141Plot <- ggplot(data=patient141, aes(x=isolate, y=staphyloxanthin)) + geom_boxplot(outlier.shape=NA,size=.1) + geom_jitter(width=.25, aes(color=week), size=2,height=0)+ scale_color_manual(values=colorsdf$colors)+
   theme_classic()+
   theme(axis.title.x = element_text(face="bold",size=15), 
         axis.title.y = element_text(face="bold",size=15),
@@ -60,7 +83,7 @@ Patient141Plot <- ggplot(data=patient141, aes(x=isolate, y=staphyloxanthin)) + g
         axis.text.x = element_text(face="bold",size=10)) +
 labs(color="Week collected", y="Staphyloxanthin production of biological replicate")+theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
 Patient141Plot$data$isolate = factor(Patient141Plot$data$isolate, levels=IsolatesOrder)
-ggsave(Patient141Plot, file="Figures/Figure2/Figure2B.pdf", width=8.175, height=5)
+ggsave(Patient141Plot, file="Figures/Figure2/Figure2B_2023.pdf", width=7, height=5)
 
 
 # Figure 2C
@@ -94,7 +117,7 @@ StrainXanthinPlot = ggplot(StaphyloxanthinTestStrains, aes(x=strain,y=average))+
   annotate(geom="text", label=paste0("p=", SA925_SA1088), y=.42, x=3.5, size=5)
         
 
-ggsave(StrainXanthinPlot, width=7.5, height=6, file="Figures/Figure2/Figure2C.pdf")
+ggsave(StrainXanthinPlot, width=7.5, height=3.5, file="Figures/Figure2/Figure2C_2023.pdf")
 
 # Figure 2D
 ###########
@@ -131,7 +154,7 @@ Strains_Survival_Thymol = ggplot(StrainsH202, aes(x=strain,y=sample))+geom_boxpl
   annotate(geom="text", y=124, x=4.5, label=paste0("p=", SA925_thymol), size=5)+
   annotate(geom="text", y=117, x=5, label=paste0("p=", SA1088_SA925thymol), size=5)
 
-ggsave(Strains_Survival_Thymol, file="Figures/Figure2/Figure2D.pdf", width=8, height=6)
+ggsave(Strains_Survival_Thymol, file="Figures/Figure2/Figure2D_2023.pdf", width=8, height=3.5)
 
 
 # Figure 2E
@@ -170,7 +193,7 @@ ThymolStrains = ggplot(StrainsThymolXanthin, aes(x=strain, y=staphyloxanthin, fi
   annotate(geom="text", label=paste0("p=", pval925fig2e), y=.45, x=3, size=5) + 
   annotate(geom="text", label=paste0("p=", pval1088fig2e), y=.45,x=4, size=5)
 
-ggsave(ThymolStrains, width=8, height=6, file="Figures/Figure2/Figure2e.pdf")
+ggsave(ThymolStrains, width=9, height=3.5, file="Figures/Figure2/Figure2e_2023.pdf")
 
       
 
@@ -201,7 +224,78 @@ PolymixinPlot = ggplot(StrainsPolymixin, aes(x=strain,y=survival))+geom_boxplot(
   annotate(geom="text", x=1.5, y=125, label=paste0("p=", p_polymixin300), size=5) + 
   annotate(geom="text", x=3.5, y=125, label=paste0("p=", p_polymixinClinical),size=5)
 
-ggsave(PolymixinPlot, width=7, height=6,file="Figures/Figure2/figure2F.pdf")
+ggsave(PolymixinPlot, width=8, height=4,file="Figures/Figure2/figure2F.pdf")
+
+
+# Figure 2H
+############
+# staphyloxanthin production by complemented transposon mutant 
+
+CompSTX = read.csv("Data/InVitroData/Complement_STX.csv")
+
+CompSTX_je2_crtn = CompSTX %>% filter(Strain %in% c("JE2", "JE2_deltaCrtN"))
+JE2crtNt = t.test(OD450_600 ~ Strain,data=CompSTX_je2_crtn)
+JE2crtN_p = round(JE2crtNt$p.value,4)
+
+CompSTX_crtn_empty = CompSTX %>% filter(Strain %in% c( "JE2_deltaCrtN", "JE2_deltaCrtN_pepSA5"))
+crtN_empty_T = t.test(OD450_600 ~ Strain,data=CompSTX_crtn_empty)
+crtN_empty_p = round(crtN_empty_T$p.value,4)
+
+CompSTX_JE2_Complement = CompSTX %>% filter(Strain %in% c( "JE2", "JE2_deltaCrtN_pepSA5-CrtMN"))
+complement_JE2_T = t.test(OD450_600 ~ Strain,data=CompSTX_JE2_Complement)
+complement_JE2_p = round(complement_JE2_T$p.value, 4)
+
+CompSTX_empty_complement = CompSTX %>% filter(Strain %in% c( "JE2_deltaCrtN_pepSA5", "JE2_deltaCrtN_pepSA5-CrtMN"))
+complement_empty_T = t.test(OD450_600 ~ Strain,data=CompSTX_empty_complement)
+complement_empty_p = round(complement_empty_T$p.value, 4)
+
+
+compstx_plot = ggplot(CompSTX, aes(x=Strain, y=OD450_600)) + 
+  geom_boxplot(fill="darkorange") + theme_classic() + geom_jitter(height=0)+
+  annotate(geom="text", x=1.5, y=1.6, label=paste0("p=",JE2crtN_p ), size=5) + 
+  annotate(geom="text", x=2.5, y=.5, label=paste0("p=",crtN_empty_p ), size=5) + 
+  annotate(geom="text", x=2.5, y=1.6, label=paste0("p=",complement_JE2_p ), size=5) + 
+  annotate(geom="text", x=3.5, y=1.7, label=paste0("p=",complement_empty_p ), size=5) 
+ggsave(compstx_plot, width=8, height=4,file="Figures/Figure2/figure2H.pdf")
+
+
+# Figure 2I
+###########
+# 5-41 = JE2
+# 7-08 = ∆crtN-pEPS5a
+# 7-10 = ∆crtN-pEP-CrtMN
+
+H2O2 =read.csv2('Data/InVitroData/H2O2_Complement_CFUs.txt', sep="\t")
+H2O2$RelDPBS = sapply(H2O2$RelDPBS, function(x) as.numeric(as.character(x)))
+
+
+# choose middle dilution for .30% concentration
+H2O2 = H2O2 %>% filter( (H2O2_Per=="0.30%")) %>% filter(DilutionID=="D5")
+shapiro.test(H2O2$RelDPBS)
+
+
+H2O2 = H2O2 %>% mutate(Strain = case_when(SaStrain=="EGM5-41" ~ "JE2",
+                                          SaStrain=="EGM7-08" ~ "crtNpEPSA5", 
+                                          SaStrain=="EGM7-10"~"crtNpEP-CrtMN"))
+
+# So that we can pair by experiment 
+H2O2 = H2O2 %>% arrange(SaStrain,Experiment)
+
+H2O2$PctSurvival = H2O2$RelDPBS*100
+CompareJE2Empty = H2O2 %>% filter(Strain %in% c("JE2", "crtNpEPSA5"))
+CompareJE2Empty_p = round((t.test(PctSurvival~Strain,data=CompareJE2Empty, paired=T))$p.value, 4)
+
+CompareEmpty_Complement = H2O2 %>% filter(Strain %in% c("crtNpEPSA5", "crtNpEP-CrtMN"))
+CompareEmpty_Complement_p = round((t.test(PctSurvival~Strain,data=CompareEmpty_Complement, paired=T))$p.value, 4)
+
+CompareJE2_Complement=H2O2 %>% filter(Strain %in% c("JE2", "crtNpEP-CrtMN"))
+CompareJE2_Complement_p = round((t.test(PctSurvival~Strain,data=CompareJE2_Complement, paired=T))$p.value, 4)
+
+h2o2Complement=ggplot(H2O2, aes(x=factor(Strain), y=PctSurvival)) + geom_boxplot(fill="dodgerblue") + geom_jitter(height=0,width=.2) + theme_classic() + scale_x_discrete(limits=c("JE2","crtNpEPSA5", "crtNpEP-CrtMN"))
+h2o2Complement = h2o2Complement + annotate(geom="text", x=1.5, y=150, label=paste0("p=",CompareJE2Empty_p ), size=5) + 
+  annotate(geom="text", x=2.5, y=200, label=paste0("p=",CompareEmpty_Complement_p ), size=5) + 
+  annotate(geom="text", x=2, y=210, label=paste0("p=",CompareJE2_Complement_p ), size=5) 
+ggsave(h2o2Complement, width=8, height=4,file="Figures/Figure2/figure2I.pdf")
 
 # Figure S2
 ###########

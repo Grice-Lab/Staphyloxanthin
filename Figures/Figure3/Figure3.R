@@ -8,6 +8,7 @@ library("dplyr")
 library("survival")
 Palette5 = (RColorBrewer::brewer.pal(10, "Spectral"))[c(4, 1, 9, 8, 10)]
 Palette3 = (RColorBrewer::brewer.pal(10, "Spectral"))[c(9, 8,10)]
+Palette5_noPBS  = (RColorBrewer::brewer.pal(10, "Spectral"))[c(4, 1, 9, 10,8)]
 
 
 woundsize= read.csv("Data/InVivoData/woundsizes.csv")
@@ -121,8 +122,8 @@ ggsave(PilotPlot, file="Figures/Figure3/FigureS3a.pdf", width=7, height=5)
 model_fit <- surv_fit(Surv(day, number) ~ group, data = kaplan)
 
 SurvivalCurve = ggsurvplot(model_fit, data = kaplan, censor.shape="|",
-           censor.size = 4, conf.int = TRUE, conf.int.style = "step",size=.5,
-           xlab = "Time in days")
+           censor.size = 4, conf.int = F,size=.5,
+           xlab = "Time in days", color="strata")
 
 pdf(file="Figures/Figure3/FigureS3b.pdf", width=7, height=6)
 SurvivalCurve
@@ -156,15 +157,13 @@ ggsave(TotalCFUPlot, file="Figures/Figure3/FigureS3c.pdf", width=8, height=5)
 
 # Figure S3d: CFUs of S. aureus at endpoint of wounding experiment (Day 14)
 ############################################################################
-# convert to CFUs/mg
-CFU$SA_gram = CFU$SA_gram/1000 
 wilcoxCFUaureus = pairwise.wilcox.test(CFU$SA_gram, CFU$group, pool.sd=F, p.adjust.method = "none", exact=F)
 USA300pvaluesCFUaureus = round((wilcoxCFUaureus$p.value)["USA300 LAC", "USA300 dCrtN"], 4)
 ClinicalpvaluesCFUaureus = round((wilcoxCFUaureus$p.value)["SA925", "SA1088"], 4)
 
 AureusCFUPlot = ggplot(data=CFU, aes(x=group, y=SA_gram+.00001))+geom_boxplot(size=.25)+
   geom_jitter(aes(color=group),size=2)+
-  labs(y="S. aureus CFUs per mg")+
+  labs(y="S. aureus CFUs per g")+
   theme_classic()+
   theme(axis.title.x = element_text(face="bold",size=15))+
   theme(axis.title.y = element_text(face="bold",size=15))+
@@ -200,7 +199,7 @@ AureusCFUPlot_Day3 = ggplot(data=CFU_Day3_Melt, aes(x=Group, y=SA_CFUmg+.00001))
 
 AureusCFUPlot_Day3$data$Group = factor(AureusCFUPlot_Day3$data$Group, levels=c("SA1088","SA925", "USA300.LAC", "USA300.dCrtN"))
 
-ggsave(AureusCFUPlot_Day3, file="Figures/Figure3/FigureS3_Day3.pdf", width=8, height=5)
+ggsave(AureusCFUPlot_Day3, file="Figures/Figure3/FigureS3_Day3.pdf", width=7, height=5)
 CFU_Day7_Melt = CFU_Day7 %>% reshape2::melt()
 colnames(CFU_Day7_Melt) = c("Group", "SA_CFUmg")
 wilcoxCFUaureus_day7 = pairwise.wilcox.test(CFU_Day7_Melt$SA_CFUmg,CFU_Day7_Melt$Group, pool.sd=F, p.adjust.method = "none", exact=F )
@@ -218,12 +217,12 @@ AureusCFUPlot_Day7 = ggplot(data=CFU_Day7_Melt, aes(x=Group, y=SA_CFUmg+.00001))
   theme(axis.text.y = element_text(face="bold",size=15))+
   theme(axis.text.x = element_text(face="bold",size=15))+
   theme(plot.title = element_text(hjust = 0.5, face="bold", size=20))+
-  scale_color_manual(values=Palette5[2:5])+
+  scale_color_manual(values=Palette5_noPBS[2:5])+
   scale_y_continuous(trans='log10')+scale_x_discrete(limits = c("USA300.LAC", "USA300.dCrtN", "SA925", "SA1088")) +
   annotate(geom="text", x= 1.5, y=9e08, label=paste0("p=",USA300pvaluesCFU_Day7_aureus),size=5)+
   annotate(geom="text", x= 3.5, y=8e08, label=paste0("p=",ClinicalpvaluesCFUaureus_day7),size=5) 
 
 AureusCFUPlot_Day7$data$Group = factor(AureusCFUPlot_Day7$data$Group, levels=c("SA1088","SA925", "USA300.LAC", "USA300.dCrtN"))
 
-ggsave(AureusCFUPlot_Day7,file="Figures/Figure3/FigureS3_Day7.pdf", width=8, height=5)
+ggsave(AureusCFUPlot_Day7,file="Figures/Figure3/FigureS3_Day7.pdf", width=7, height=5)
 
