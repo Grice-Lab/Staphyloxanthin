@@ -1,6 +1,6 @@
 
 ## Whole genome assembly & contamination checks
-
+This folder contains the scripts used to assemble whole genomes and align trimmed reads to assembled contigs to check for intra-species contamination. 
 
 ### Trim the raw reads of all 14 isolates in DFU141
 ```
@@ -45,7 +45,7 @@ Run BLAST on the follow up contigs
 sh BlastFollowupContigs.sh # uses BlastEnv and does NT blast on each ‘follow up’ contig
 sh ReadBlastOutput.sh # Calls Add_SA_Contigs_Back.R to look at Blast output, see if any contigs blast to things other than S. Aureus 
 ```
-Since no "follow-up" contigs blasted to non-S. aureus as a top hit, combine all >100 bp contigs back into a single file
+Since no "follow-up" contigs blasted to non-S. aureus (or non S. aureus phage) as a top hit, combine all >100 bp contigs back into a single file
 ```
 sh CombineFilteredContigs.sh
 ```
